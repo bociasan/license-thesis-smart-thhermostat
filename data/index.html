@@ -660,6 +660,9 @@
     </div>
 </div>
 <script>
+    let gateway = `ws://${window.location.hostname}/ws`;
+    let websocket;
+
     const use_mock = false
     const OPENWEATHER_API_KEY = '3a00a550579c64e2a2f4e723392179c0'
     let lat, lon, haveLocation = false;
@@ -725,16 +728,16 @@
     const getFunc = (action) => {
 
     }
-    const toggleFunc = (element) => {
-        switch (element) {
-            case 'mode':
-                getEl(element).innerHTML = getEl(element).innerHTML === 'Auto' ? 'Manual' : 'Auto'
-                break;
-            case 'status':
-                getEl(element).innerHTML = getEl(element).innerHTML === 'Off' ? 'On' : 'Off'
-                break;
-        }
-    }
+    // const toggleFunc = (element) => {
+    //     switch (element) {
+    //         case 'mode':
+    //             getEl(element).innerHTML = getEl(element).innerHTML === 'Auto' ? 'Manual' : 'Auto'
+    //             break;
+    //         case 'status':
+    //             getEl(element).innerHTML = getEl(element).innerHTML === 'Off' ? 'On' : 'Off'
+    //             break;
+    //     }
+    // }
     const parseFunc = (action) => {
         switch (action.type) {
             case 'set':
@@ -1034,21 +1037,69 @@
             alert("This is thermostat project :))")
         })
         setOnclick('mode', () => {
-            toggleFunc('mode')
+            // toggleFunc('mode')
         })
         setOnclick('status', () => {
-            toggleFunc('status')
+            // toggleFunc('status')
         })
         setTime()
         setFunc2('ctv', INITIAL_JSON.current_temp) //+ '°'
         setFunc2('target', INITIAL_JSON.target_temp)
         setFunc2('wifi-ssid', INITIAL_JSON.wifiSsid)
         setFunc2('wifi-rssi', INITIAL_JSON.wifiRssi + 'dB')
+        setFunc2('mode', INITIAL_JSON.mode? 'Auto':'Manual')
+        setFunc2('status', INITIAL_JSON.status? 'On':'Off')
         setOnclick('weather-update-button', weatherButtonOnClick)
         setOnclick('weather-update-button2', weatherButtonOnClick)
-        // weatherButtonOnClick()
+        weatherButtonOnClick()
         initiateScenesOnClick()
         updateWeeklyStats(INITIAL_JSON.weekly_stats)
+        initWebSocket();
+    }
+
+
+    function initWebSocket() {
+        console.log('Trying to open a WebSocket connection…');
+        websocket = new WebSocket(gateway);
+        websocket.onopen = onOpen;
+        websocket.onclose = onClose;
+        websocket.onmessage = onMessage;
+    }
+
+    const INITIAL_STATE_REQ = {
+        type: 'get',
+        value: 'initial_state'
+    }
+    function getInitialState(){
+        console.log('sent initial state request!')
+        websocket.send(JSON.stringify(INITIAL_STATE_REQ));
+    }
+
+    function onOpen(event) {
+        console.log('Connection opened');
+        setTimeout(()=>{
+            getInitialState();
+        }, 300)
+    }
+
+    function onClose(event) {
+        console.log('Connection closed');
+        setTimeout(initWebSocket, 2000);
+    }
+
+    function onMessage(event) {
+        console.log(event.data);
+        // var myObj = JSON.parse(event.data);
+
+
+
+        // var keys = Object.keys(myObj);
+        //
+        // for (var i = 0; i < keys.length; i++){
+        //     var key = keys[i];
+        //     document.getElementById(key).innerHTML = myObj[key];
+        //     document.getElementById("slider"+ (i+1).toString()).value = myObj[key];
+        // }
     }
 </script>
 </body>

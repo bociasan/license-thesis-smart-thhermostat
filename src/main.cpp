@@ -3,13 +3,19 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
+#include <Arduino_JSON.h>
 #include <credentials.h>
+#include <variables.h>
 
 const char *ssid = BOCIASAN_WIFI_SSID;
 const char *password = BOCIASAN_WIFI_PASS;
 
 // Webserver
 AsyncWebServer server(80);
+//Websocket
+AsyncWebSocket ws("/ws");
+
+JSONVar state;
 
 const int LED_PIN = LED_BUILTIN;
 
@@ -17,6 +23,65 @@ void notFound(AsyncWebServerRequest *request)
 {
   request->send(404, "text/plain", "Not found");
 }
+
+String getInitialStateString(){
+  state["mode"] = mode;
+  state["status"] = status;
+  state["target"] = round(target * 100) / 100.0;;
+  state["current_temp"] = round(current_temp * 100) / 100.0;
+  state["scene"] = scene;
+  state["esp_time"] = esp_time;
+  state["ssid"] = WiFi.SSID();
+  state["rssi"] = WiFi.RSSI();
+  state["weekly_stats"] = weekly_stats;
+  state["city"] = city;
+  // state["sensors"][0] = WiFi.RSSI();
+
+  // state[""] = ;
+  // state[""] = ;
+  return JSON.stringify(state);
+}
+
+void notifyClients(String sliderValues) {
+  ws.textAll(sliderValues);
+}
+
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocketClient *client) {
+  AwsFrameInfo *info = (AwsFrameInfo*)arg;
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+    data[len] = 0;
+    // message = (char*)data;
+    // Serial.println(message);
+    JSONVar payload = JSON.parse((char*)data);
+    // payload["counter"] = (int)payload["counter"]+1;
+    // String jsonString = JSON.stringify(payload);
+    // ws.textAll(jsonString);
+
+
+    if (payload["type"] == String("get")){
+      if (payload["value"] == String("initial_state"))
+      client->text(getInitialStateString());
+    } 
+  }
+}
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
+  switch (type) {
+    case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      // client->text("{\"counter\":\"777\"}");
+      break;
+    case WS_EVT_DISCONNECT:
+      Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      break;
+    case WS_EVT_DATA:
+      handleWebSocketMessage(arg, data, len, client);
+      break;
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
+      break;
+  }
+}
+
 
 void setup()
 {
@@ -50,12 +115,14 @@ void setup()
   // Route for root index.html
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html"); });
-
   server.onNotFound(notFound);
-
   server.begin();
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
+  server.serveStatic("/", LittleFS, "/");
 }
 
 void loop()
 {
+  ws.cleanupClients();
 }

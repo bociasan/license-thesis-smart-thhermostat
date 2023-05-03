@@ -662,26 +662,40 @@
 <script>
     let gateway = `ws://${window.location.hostname}/ws`;
     let websocket;
-    let lat, lon, city
     const MIN_DAY_HEIGHT = 5
     const getEl = (id) => document.getElementById(id)
+    let state = {
+        mode: true,
+        statuss: true,
+        target: 0,
+        current_temp: 0,
+        scene: 0,
+        esp_time: 0,
+        ssid: "Bociasan",
+        rssi: 0,
+        weekly_stats: [
+            [
+                0,
+                10
+            ],
+            [
+                0,
+                11
+            ],
+            [
+                0,
+                12
+            ],
+            [
+                0,
+                13
+            ]
+        ],
+        city: undefined,
+        lat: undefined,
+        lon: undefined
+    }
 
-
-    const SET_TARGET = {
-        type: 'set',
-        value: 22,
-        element: 'target'
-    }
-    const SET_MODE = {
-        type: 'set',
-        value: 1,
-        element: 'mode'
-    }
-    const SET_STATUS = {
-        type: 'set',
-        value: 0,
-        element: 'status'
-    }
     const setFunc = (action) => {
         console.log(action.value)
         getEl(action.element).innerHTML = action.value
@@ -767,9 +781,9 @@
             return fetch(`https://geocode.maps.co/search?q=${city}&format=json`).then(res => res.json()).then(json => {
                 if (json.length > 0) {
                     // console.log(json)
-                    lat = json[0].lat
-                    lon = json[0].lon
-                    return {success: `City found! lat=${lat} lon=${lon}`}
+                    state.lat = json[0].lat
+                    state.lon = json[0].lon
+                    return {success: `City found! lat=${state.lat} lon=${state.lon}`}
                 } else {
                     return {error: 'City not found! Verify if you wrote the correct name of the city... '}
                 }
@@ -783,14 +797,14 @@
         return {
             icon: icon,
             main_temp: json.current_weather.temperature,
-            city: city,
+            city: state.city,
             temp_max: json.daily.temperature_2m_max[3],
             temp_min: json.daily.temperature_2m_min[3],
             time: timeNowFunc()
         }
     }
     const updateWeather = () => {
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&current_weather=true&past_days=3&forecast_days=4&timezone=auto`).then(res => res.json()).then(async json => {
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&current_weather=true&past_days=3&forecast_days=4&timezone=auto`).then(res => res.json()).then(async json => {
                 // console.log(json)
                 setWeatherData(await parseOpenMeteoData(json))
             }
@@ -798,13 +812,17 @@
     }
     const weatherButtonOnClick = () => {
         console.log('weather button click')
-        getLatLongFromCity(city).then((e) => {
-            if (e.success) {
-                updateWeather()
-            } else {
-                alert(e.error)
-            }
-        })
+        if (state.city) {
+            getLatLongFromCity(state.city).then((e) => {
+                if (e.success) {
+                    updateWeather()
+                } else {
+                    alert(e.error)
+                }
+            })
+        } else {
+            alert("City in undefined!")
+        }
         // setTimeout(weatherButtonOnClick, 300000)
     }
     const setOnclick = (element, func) => getEl(element).onclick = func
@@ -834,43 +852,65 @@
                 }
             }
             if (i <= 4) {
-                if (!haveSet && statsArray[i-1][0]===0) {
+                if (!haveSet && statsArray[i - 1][0] === 0) {
                     // console.log(`set for i=${i} | value=${statsArray[i-1][1]}`)
-                    getEl(`wv${i}`).style.maxHeight = (statsArray[i-1][1] / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
-                    getEl(`wv${i}t`).innerHTML = statsArray[i-1][1].toString()
+                    getEl(`wv${i}`).style.maxHeight = (statsArray[i - 1][1] / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                    getEl(`wv${i}t`).innerHTML = statsArray[i - 1][1].toString()
                 }
             }
         }
     }
+
     function unactivateAllScenes() {
         let arr = document.querySelectorAll(".scene-card");
         for (let i = 0; i < arr.length; i++) {
             arr[i].closest('div').classList.remove('active')
         }
     }
+
+    const getReverseOfSceneCard = (val) => {
+        const SCENES = {
+            0: 'SLEEP',
+            1: 'WORK',
+            2: 'BASIC',
+            3: 'SUMMER',
+            4: 'WINTER',
+            5: 'HIBER',
+            'SLEEP': 0,
+            'WORK': 1,
+            'BASIC': 2,
+            'SUMMER': 3,
+            'WINTER': 4,
+            'HIBER': 5,
+        }
+        return SCENES[val]
+    }
     const initiateScenesOnClick = () => {
         let scenes = document.querySelectorAll(".scene-card");
         for (let i = 0; i < scenes.length; i++) {
             scenes[i].onclick = (e) => {
                 // console.log(e.target.closest('div').classList.toggle('active'))
-                console.log('scene click')
+                console.log(`scene ${getReverseOfSceneCard(e.target.closest('div').children[0].innerText)} click`)
                 if (!e.target.closest('div').classList.contains('active')) {
-                    unactivateAllScenes()
-                    e.target.closest('div').classList.add('active')
+                    // unactivateAllScenes()
+                    // e.target.closest('div').classList.add('active')
+                    sendSetRequest('scene', getReverseOfSceneCard(e.target.closest('div').children[0].innerText))
                 }
             }
         }
     }
-
     const initialization = () => {
         initWebSocket();
 
-        setOnclick('navbar-title', () => alert("This is thermostat project :))"))
+        setOnclick('navbar-title', () => {
+            // alert("This is thermostat project :))")
+            updateHtmlData()
+        })
         setOnclick('mode', () => {
-            // toggleFunc('mode')
+            sendSetRequest('mode', state.mode?0:1)
         })
         setOnclick('status', () => {
-            // toggleFunc('status')
+            sendSetRequest('status', state.statuss?0:1)
         })
         setOnclick('weather-update-button', weatherButtonOnClick)
         setOnclick('weather-update-button2', weatherButtonOnClick)
@@ -894,40 +934,101 @@
         websocket.onmessage = onMessage;
     }
 
-    const INITIAL_STATE_REQ = {
-        type: 'get',
-        value: 'initial_state'
+    const sendRequest = (requestObject) => {
+        websocket.send(JSON.stringify(requestObject));
+    }
+
+    const createRequestString = (type, param, value = false) => {
+        console.log(value, typeof value)
+        if (value) {
+            console.log('create set string')
+            return {
+                rtype: type,
+                rparam: param,
+                rvalue: value,
+            }
+        } else {
+            console.log('create get string')
+            return {
+                rtype: type,
+                rparam: param,
+            }
+        }
+    }
+    const createGetRequestString = (param) => {
+        return {
+            rtype: 'get',
+            rparam: param,
+        }
+    }
+
+    const createSetRequestString = (param, value) => {
+        return {
+            rtype: 'set',
+            rparam: param,
+            rvalue: value,
+        }
+    }
+
+    const sendGetRequest = (param) => {
+        sendRequest(createGetRequestString(param))
+    }
+    const sendSetRequest = (param, value) => {
+        sendRequest(createSetRequestString(param, value))
     }
 
     function getInitialState() {
         console.log('sent initial state request!')
-        websocket.send(JSON.stringify(INITIAL_STATE_REQ));
+        sendGetRequest('initial_state')
     }
 
-    const setActiveScene = (index) =>{
+    const setActiveScene = (index) => {
         unactivateAllScenes()
         document.querySelectorAll(".scene-card")[index].closest('div').classList.add('active')
+    }
+    const updateHtmlData = () => {
+        const {current_temp, target, ssid, rssi, mode, statuss, weekly_stats, scene} = state
+        // weatherButtonOnClick()
+        setFunc2('ctv', current_temp)
+        setFunc2('target', target)
+        setFunc2('wifi-ssid', ssid)
+        setFunc2('wifi-rssi', rssi + 'dB')
+        setFunc2('mode', mode ? 'Auto' : 'Manual')
+        setFunc2('status', statuss ? 'On' : 'Off')
+        updateWeeklyStats(weekly_stats)
+        setActiveScene(scene)
     }
 
     const updateAllData = (json) => {
         console.log(json)
-        setFunc2('ctv', json.current_temp)
-        setFunc2('target', json.target)
-        setFunc2('wifi-ssid', json.ssid)
-        setFunc2('wifi-rssi', json.rssi + 'dB')
-        setFunc2('mode', json.mode ? 'Auto' : 'Manual')
-        setFunc2('status', json.status ? 'On' : 'Off')
-        updateWeeklyStats(json.weekly_stats)
-        city = json.city
-        weatherButtonOnClick()
+        if (json.rtype === 'get') {
+            if (json.rparam === 'initial_state') {
+                state.current_temp = json.current_temp
+                state.target = json.target
+                state.ssid = json.ssid
+                state.rssi = json.rssi
+                state.mode = json.mode
+                state.statuss = json.status
+                state.weekly_stats = json.weekly_stats
+                state.city = json.city
+                state.scene = json.scene
+            } else
+            if (json.rparam === 'status') {
+                state['statuss'] = json.rvalue
+            } else
+            {
+                state[json.rparam] = json.rvalue
+            }
+        }
+        updateHtmlData()
 
-        setActiveScene(json.scene)
+        if (json.rparam === 'initial_state')setTimeout(weatherButtonOnClick, 100)
     }
 
     function onOpen(event) {
         console.log('Connection opened');
         // setTimeout(() => {
-            getInitialState();
+        getInitialState();
         // }, 300)
     }
 
@@ -937,7 +1038,7 @@
     }
 
     function onMessage(event) {
-        // console.log(event.data);
+        console.log(event.data);
         updateAllData(JSON.parse(event.data))
     }
 </script>

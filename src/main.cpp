@@ -27,7 +27,7 @@ void notFound(AsyncWebServerRequest *request)
 String getInitialStateString(){
   state["mode"] = mode;
   state["status"] = status;
-  state["target"] = round(target * 100) / 100.0;;
+  state["target"] = round(target * 100) / 100.0;
   state["current_temp"] = round(current_temp * 100) / 100.0;
   state["scene"] = scene;
   state["esp_time"] = esp_time;
@@ -42,13 +42,34 @@ String getInitialStateString(){
   state["weekly_stats"][3][0] = weekly_stats[3][0];
   state["weekly_stats"][3][1] = weekly_stats[3][1];
   state["city"] = city;
-  state["reponse_type"] = String("get");
-  state["response_value"] = String("initial_state");
+  state["rtype"] = "get";
+  state["rparam"] = "initial_state";
   // state["sensors"][0] = WiFi.RSSI();
 
   // state[""] = ;
   // state[""] = ;
   return JSON.stringify(state);
+}
+
+String getVariableString(String rparam){
+  JSONVar response;
+  response["rtype"] = "get";
+
+  if (rparam == "mode"){
+    response["rparam"] = "mode";
+    response["rvalue"] = mode;
+  } else 
+  if (rparam == "status"){
+    response["rparam"] = "status";
+    response["rvalue"] = status;
+  }else 
+  if (rparam == "scene"){
+    response["rparam"] = "scene";
+    response["rvalue"] = scene;
+  }
+  String res = JSON.stringify(response);
+  Serial.println(res);
+  return res;
 }
 
 void notifyClients(String json_string) {
@@ -59,17 +80,41 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocket
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
-    // message = (char*)data;
-    // Serial.println(message);
-    JSONVar payload = JSON.parse((char*)data);
+    Serial.println((char*)data);
+    JSONVar item = JSON.parse((char*)data);
     // payload["counter"] = (int)payload["counter"]+1;
     // String jsonString = JSON.stringify(payload);
     // ws.textAll(jsonString);
 
-    if (payload["type"] == String("get")){
-      if (payload["value"] == String("initial_state"))
-      client->text(getInitialStateString());
-    } 
+    if (item["rtype"] == String("get")){
+      if (item["rparam"] == String("initial_state")){
+        client->text(getInitialStateString());
+      }
+      
+    } else 
+    if (item["rtype"] == String("set")){
+      String value = JSON.stringify(item["rvalue"]);
+      if (item["rparam"] == String("mode")){
+        mode = value.toInt();
+        Serial.printf("Mode set to %d. Value is %s. \n", mode, value);
+
+        // client->text(getVariableString("mode"));
+        notifyClients(getVariableString("mode"));
+      } else
+      if (item["rparam"] == String("status")){
+        status = value.toInt();
+        Serial.printf("Status set to %d. Value is %s.  \n", status, value);
+        // client->text(getVariableString("status"));
+        notifyClients(getVariableString("status"));
+      }
+      else
+      if (item["rparam"] == String("scene")){
+        scene = value.toInt();
+        Serial.printf("Scene set to %d. Value is %s.  \n", scene, value);
+        // client->text(getVariableString("scene"));
+        notifyClients(getVariableString("scene"));
+      }
+    }
   }
 }
 

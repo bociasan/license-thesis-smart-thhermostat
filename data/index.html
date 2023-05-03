@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        :root {
+            --background: #e4e7fb;
+            --accent: #785dfe;
+            --font-color: #464272;
+            --brpx: 25px;
+            --brpx-container: 10px;
+            --card-padding: 17px;
+            --icon-color: var(--accent);
+            --button-background-color: #0030a923;
+            --button-background-color-hover: #785dfe60;
+            --gray: #00001f50;
+
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            font-size: 18px;
+        }
+
+        html {
+            height: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Bahnschrift;
+        }
+
+        #main-container {
+            margin: auto;
+            box-sizing: border-box;
+            /*margin: 10px;*/
+            padding: 0 25px;
+            background-color: var(--background);
+            border-radius: var(--brpx-container);
+            min-height: 100%;
+            /*height: 100%;*/
+            /*width: 90%;*/
+            min-width: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #navbar {
+            padding: 25px 15px;
+            height: 50px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #navbar-left {
+            width: 300px;
+            display: flex;
+            flex: 1;
+            flex-direction: row;
+            align-items: flex-end;
+            height: 45px;
+            /*width: 30px;*/
+            /*padding-left: 10px;*/
+        }
+
+        #navbar-title {
+            text-align: center;
+            flex: 3;
+            font-size: 40px;
+            font-weight: bold;
+            transition-duration: 0.5s;
+            transition-timing-function: ease-in-out;
+        }
+
+        #navbar-title:hover {
+            font-size: 45px;
+            cursor: pointer;
+        }
+
+        #navbar-right {
+            flex: 1;
+            width: 300px;
+            display: flex;
+            justify-content: flex-end;
+            /*padding-right: 10px;*/
+        }
+
+        .flex-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            flex-grow: 1;
+            /*width: 100%;*/
+            /*height: 90%;*/
+        }
+
+        .side {
+            /*margin: 10px;*/
+            display: flex;
+            flex-direction: column;
+            flex-basis: 0;
+            min-height: 600px;
+            /*max-height: 600px;*/
+            flex-grow: 1;
+            flex-shrink: 1;
+            /*background-color: #00000022;*/
+            height: inherit;
+        }
+
+        .card {
+            position: relative;
+            max-width: 100%;
+            background-color: white;
+            box-sizing: border-box;
+            margin: 15px;
+            border-radius: var(--brpx);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--card-padding);
+            flex: 1;
+        }
+
+        .card1 {
+            /*min-height: 150px;*/
+            /*min-width: 150px;*/
+            /*flex-grow: 1;*/
+            /*flex-shrink: 1;*/
+
+        }
+
+        .card2 {
+            min-height: 300px;
+            min-width: 450px;
+            flex-grow: 6;
+            background-color: transparent;
+            padding: 0;
+            margin-top: 0;
+
+        }
+
+        .card3 {
+            min-height: 300px;
+            min-width: 400px;
+            flex-grow: 6;
+
+        }
+
+        .card4 {
+            min-height: 150px;
+            min-width: 450px;
+            flex-grow: 5;
+            flex-shrink: 1;
+
+        }
+
+        .fgs1 {
+            display: flex;
+            /*flex-grow: 1;*/
+            flex-shrink: 1;
+        }
+
+        .fd-row {
+            flex-direction: row;
+        }
+
+        .flex-time-weather {
+            display: flex;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-direction: column;
+        }
+
+        .card-title {
+            margin-top: 5px;
+            margin-left: 3px;
+            font-size: 18px;
+            color: var(--font-color);
+            text-align: center;
+            /*width: 160px;*/
+            /*height: 40%;*/
+        }
+
+        .card-title-xl {
+            width: 220px;
+            font-size: 28px;
+        }
+
+        .card-button {
+            border-color: transparent;
+            border-radius: var(--brpx);
+            width: 100%;
+            height: 55%;
+            background-color: var(--button-background-color);
+            font-size: 40px;
+            font-weight: bold;
+            transition-duration: 0.15s;
+            transition-timing-function: ease-in-out;
+            margin: auto;
+        }
+
+        .card-button:hover {
+            background-color: var(--button-background-color-hover);
+            cursor: pointer;
+        }
+
+        .left {
+            box-sizing: border-box;
+            align-self: flex-start;
+            text-align: start !important;
+        }
+
+        .week-container {
+            height: 80%;
+            width: 100%;
+            max-width: 100%;
+            /*background-color: #785dfe;*/
+            display: flex;
+            flex-direction: row;
+
+        }
+
+        .day {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-align: center;
+            height: 100%;
+            min-width: 55px;
+            margin-right: 15px;
+            flex: 1;
+            /*background-color: #464272;*/
+        }
+
+        .week-title {
+            /*height: 10%;*/
+            /*text-align: center;*/
+            /*width: 100px;*/
+            /*width: fit-content;*/
+            /*margin: auto;*/
+            padding: 12px 0 10px 0;
+            font-size: 21px;
+            /*color: white;*/
+            color: var(--gray);
+        }
+
+        .week-column {
+            height: 100%;
+            width: inherit;
+            display: flex;
+            flex-direction: column-reverse;
+            /*background-color: red;*/
+
+
+        }
+
+        .wv {
+            border-radius: 8px 8px 0 0;
+            width: inherit;
+            background-color: white;
+            /*height: 15%;*/
+            /*padding-top: 10px;*/
+            box-sizing: border-box;
+        }
+
+        .wvt {
+            /*box-sizing: border-box;*/
+            color: var(--gray);
+            font-size: 25px;
+            /*margin-top: 15px;*/
+            /*width: 80%;*/
+        }
+
+        #time {
+            font-size: 55px;
+            font-weight: bold;
+            min-width: 135px;
+        }
+
+        #timedw {
+            color: var(--accent);
+            /*display:inline;*/
+        }
+
+        #timedm {
+            /*display:inline;*/
+            color: black;
+        }
+
+        .weather-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: visibility 0s linear 1s, opacity 0.5s ease-in-out;
+            transition-delay: 0s;
+            max-width: inherit;
+            /*margin-right: var(--card-padding);*/
+            padding: var(--card-padding);
+            box-sizing: border-box;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #weather-data, #weather-update-button2 {
+            transition: visibility 0s linear 1s, opacity 0.5s ease-in-out;
+            transition-delay: 0s;
+        }
+
+        .hidden {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s linear 1s, opacity 0.5s ease-in-out;
+        }
+
+        #weather-update-button:hover {
+            cursor: pointer;
+        }
+
+        .scene-card {
+            box-sizing: border-box;
+            height: 100px;
+            width: 100px;
+            border-radius: 15px;
+            margin: 10px;
+            padding: 10px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            transition-duration: 0.15s;
+            transition-timing-function: ease-in-out;
+        }
+
+        .scene-card:hover {
+            cursor: pointer;
+            background-color: var(--button-background-color-hover);
+        }
+
+        .scene-card.active {
+            /*transition: background-color 1s ease-out;*/
+            background-color: var(--accent) !important;
+        }
+
+        .scene-card.active > span {
+            color: white !important;
+        }
+
+        .scene-card.active > svg {
+            transition: color 1.1s ease-out;
+            color: white !important;
+        }
+
+        .scene-title {
+            box-sizing: border-box;
+            margin: 2px;
+            transition: color 0.4s ease-out;
+        }
+    </style>
+</head>
+<body onload="initialization()">
+<div id="main-container">
+    <div id="navbar">
+        <div id="navbar-left">
+            <div style="height: inherit;width: 50px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+                    <rect width="256" height="256" fill="none"/>
+                    <path d="M92.9,166.1a50.7,50.7,0,0,1,70.2,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <path d="M59,132.1a98.8,98.8,0,0,1,138,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <path d="M25.1,98.2a146.6,146.6,0,0,1,205.8,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <circle cx="128" cy="200" r="16" fill="var(--icon-color)"/>
+                </svg>
+            </div>
+            <div>
+                <span id="wifi-rssi"></span>
+                <div id="wifi-ssid">---</div>
+            </div>
+        </div>
+        <div id="navbar-title">My Thermostat</div>
+        <div id="navbar-right"></div>
+    </div>
+    <div class="flex-container">
+        <div class="side">
+            <div class="fgs1 fd-row">
+                <div class="card card1">
+                    <div class="card-title">
+                        CLIMATE
+                    </div>
+                    <button class="card-button" id="mode">Auto</button>
+                </div>
+                <div class="card card1">
+                    <div class="card-title">
+                        STATUS
+                    </div>
+                    <button class="card-button" id="status">On</button>
+                </div>
+                <div class="card card1" style="padding-bottom: 0">
+                    <div class="card-title">
+                        TARGET
+                    </div>
+                    <div style="display: flex">
+                        <span id="target" style="font-size: 110px;">-</span>
+                        <span style="font-size: 90px">°</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card card2">
+                <div class="card-title card-title-xl left" style="height: 14%;">
+                    WEEKLY STATS
+                </div>
+                <div class="week-container">
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv1" class="wv">
+                                <span id="wv1t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">MON</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv2" class="wv">
+                                <span id="wv2t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">TUE</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv3" class="wv">
+                                <span id="wv3t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <span class="week-title">WED</span>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv4" class="wv">
+                                <span id="wv4t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">THU</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv5" class="wv">
+                                <span id="wv5t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">FRI</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv6" class="wv">
+                                <span id="wv6t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">SAT</div>
+                    </div>
+                    <div class="day" style="margin-right: 0;">
+                        <div class="week-column">
+                            <div id="wv7" class="wv">
+                                <span id="wv7t" class="wvt">-</span>
+                            </div>
+                        </div>
+                        <div class="week-title">SUN</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="side">
+            <div class="fgs1">
+                <div class="card card3">
+                    <div class="card-title card-title-xl left ">
+                        CURRENT TEMP
+                    </div>
+                    <div style="display: flex">
+                        <span id="ctv" style="font-size: 240px">-</span>
+                        <span style="font-size: 150px">°</span>
+                    </div>
+                </div>
+                <div class="flex-time-weather">
+                    <div class="card card1">
+                        <div class="card-title left">
+                            TIME
+                        </div>
+                        <div id="time">00:00</div>
+                        <div>
+                            <span id="timedw">SUN, </span>
+                            <span id="timedm">10 MAY</span>
+                        </div>
+                    </div>
+                    <div id="weather-card" class="card card1">
+                        <div style="width:100%;display: flex; justify-content: space-between; align-items: center">
+                            <span class="card-title left">WEATHER</span>
+                            <div id="weather-update-button2" style="display: flex; align-items: center;" class="hidden">
+                                    <svg width="15px" height="15px" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                         viewBox="0 0 118.04 122.88">
+                                        <path d="M16.08,59.26A8,8,0,0,1,0,59.26a59,59,0,0,1,97.13-45V8a8,8,0,1,1,16.08,0V33.35a8,8,0,0,1-8,8L80.82,43.62a8,8,0,1,1-1.44-15.95l8-.73A43,43,0,0,0,16.08,59.26Zm22.77,19.6a8,8,0,0,1,1.44,16l-10.08.91A42.95,42.95,0,0,0,102,63.86a8,8,0,0,1,16.08,0A59,59,0,0,1,22.3,110v4.18a8,8,0,0,1-16.08,0V89.14h0a8,8,0,0,1,7.29-8l25.31-2.3Z"></path>
+                                    </svg>
+
+                                <span id="wut">00:00</span>
+                            </div>
+
+                        </div>
+                        <div style="width: 50px; height: 50px; position: absolute; top:55%;  transform: translate(0, -50%);"
+                             id="weather-update-button">
+                            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 118.04 122.88">
+                                <path d="M16.08,59.26A8,8,0,0,1,0,59.26a59,59,0,0,1,97.13-45V8a8,8,0,1,1,16.08,0V33.35a8,8,0,0,1-8,8L80.82,43.62a8,8,0,1,1-1.44-15.95l8-.73A43,43,0,0,0,16.08,59.26Zm22.77,19.6a8,8,0,0,1,1.44,16l-10.08.91A42.95,42.95,0,0,0,102,63.86a8,8,0,0,1,16.08,0A59,59,0,0,1,22.3,110v4.18a8,8,0,0,1-16.08,0V89.14h0a8,8,0,0,1,7.29-8l25.31-2.3Z"></path>
+                            </svg>
+                        </div>
+                        <div id="weather-data" class="hidden">
+                            <div style="display: flex; align-self: flex-start;">
+                                <div style="min-height:100px;">
+                                    <img width="100px" height="100px" id="weather-icon">
+                                </div>
+                                <div style="align-self: center;">
+                                    <div id="wcc" style="font-size: 20px; min-width: 115px;"></div>
+                                    <div style="margin: auto;">
+                                        <span id="wct" style="font-size: 35px;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <span>max: </span>
+                                <b><span id="wcmax"></span></b>
+                                <span>°C</span>
+                                <span style="margin-left: 5px;">min: </span>
+                                <b><span id="wcmin"></span></b>
+                                <span>°C</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card4">
+                <div class="card-title left">
+                    THERMOSTAT SCENES
+                </div>
+                <div style="display: flex">
+                    <div class="scene-card">
+                        <span class="scene-title" style="margin-top: 0">SLEEP</span>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <svg style="color:var(--accent)" width="50" height="50" viewBox="0 0 48 48" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="48" fill="white" fill-opacity="0.01"/>
+                            <path d="M8 12C8 10.3431 9.34315 9 11 9H37C38.6569 9 40 10.3431 40 12V23H8V12Z"
+                                  stroke="currentcolor" stroke-width="2.5" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                            <path d="M6 35V39" stroke="currentcolor" stroke-width="2.5" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                            <path d="M42 35V39" stroke="currentcolor" stroke-width="2.5" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                            <path d="M29 18H19C17.3431 18 16 19.3431 16 21V23H32V21C32 19.3431 30.6569 18 29 18Z"
+                                  fill="none" stroke="currentcolor" stroke-width="2.5" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                            <path d="M4 26C4 24.3431 5.34315 23 7 23H41C42.6569 23 44 24.3431 44 26V35H4V26Z"
+                                  stroke="currentcolor" stroke-width="2.5" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="scene-card">
+                        <span class="scene-title" style="margin-top: 3px">WORK</span>
+                        <!--                                                <svg style="color:var(&#45;&#45;accent)" xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentcolor"-->
+                        <!--                                                     class="bi bi-briefcase-fill" viewBox="0 0 16 16">-->
+                        <!--                                                    <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v1.384l7.614 2.03a1.5 1.5 0 0 0 .772 0L16 5.884V4.5A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5z"/>-->
+                        <!--                                                    <path d="M0 12.5A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5V6.85L8.129 8.947a.5.5 0 0 1-.258 0L0 6.85v5.65z"/>-->
+                        <!--                                                </svg>-->
+                        <svg style="color:var(--accent)" xmlns="http://www.w3.org/2000/svg" width="44" height="44"
+                             fill="currentcolor"
+                             class="bi bi-briefcase" viewBox="0 0 16 16">
+                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                    </div>
+                    <div class="scene-card">
+                        <span class="scene-title" style="margin-top: 5px">BASIC</span>
+                        <svg style="color:var(--accent)" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                             fill="currentcolor"
+                             class="bi bi-bootstrap" viewBox="0 0 16 16">
+                            <path d="M5.062 12h3.475c1.804 0 2.888-.908 2.888-2.396 0-1.102-.761-1.916-1.904-2.034v-.1c.832-.14 1.482-.93 1.482-1.816 0-1.3-.955-2.11-2.542-2.11H5.062V12zm1.313-4.875V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762V8.162h1.822c1.236 0 1.887.463 1.887 1.348 0 .896-.627 1.377-1.811 1.377H6.375z"/>
+                            <path d="M0 4a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4zm4-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H4z"/>
+                        </svg>
+                    </div>
+                    <div class="scene-card active">
+                        <span class="scene-title" style="margin-top: 7px">SUMMER</span>
+                        <svg style="color:var(--accent)" xmlns="http://www.w3.org/2000/svg" width="44" height="44"
+                             fill="currentcolor"
+                             class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
+                            <path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                        </svg>
+                    </div>
+                    <div class="scene-card">
+                        <span class="scene-title" style="margin-top: 6px">WINTER</span>
+                        <svg style="color:var(--accent)" xmlns="http://www.w3.org/2000/svg" width="45" height="45"
+                             fill="currentcolor"
+                             class="bi bi-snow" viewBox="0 0 16 16">
+                            <path d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z"/>
+                        </svg>
+                    </div>
+                    <div class="scene-card">
+                        <span class="scene-title" style="margin-top: 4px">HIBER</span>
+                        <svg style="margin-left: 10px; color:var(--accent)" xmlns="http://www.w3.org/2000/svg"
+                             width="46" height="46" fill="currentcolor"
+                             class="bi bi-thermometer-snow" viewBox="0 0 16 16">
+                            <path d="M5 12.5a1.5 1.5 0 1 1-2-1.415V9.5a.5.5 0 0 1 1 0v1.585A1.5 1.5 0 0 1 5 12.5z"/>
+                            <path d="M1 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0V2.5zM3.5 1A1.5 1.5 0 0 0 2 2.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0L5 10.486V2.5A1.5 1.5 0 0 0 3.5 1zm5 1a.5.5 0 0 1 .5.5v1.293l.646-.647a.5.5 0 0 1 .708.708L9 5.207v1.927l1.669-.963.495-1.85a.5.5 0 1 1 .966.26l-.237.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.884.237a.5.5 0 1 1-.26.966l-1.848-.495L9.5 8l1.669.963 1.849-.495a.5.5 0 1 1 .258.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.237.883a.5.5 0 1 1-.966.258L10.67 9.83 9 8.866v1.927l1.354 1.353a.5.5 0 0 1-.708.708L9 12.207V13.5a.5.5 0 0 1-1 0v-11a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const use_mock = false
+    const OPENWEATHER_API_KEY = '3a00a550579c64e2a2f4e723392179c0'
+    let lat, lon, haveLocation = false;
+    const MIN_DAY_HEIGHT = 15
+    const INITIAL_JSON = {
+        wifiSsid: 'Bociasan',
+        wifiRssi: -13,
+        mode: 1,
+        status: 1,
+        target_temp: 20,
+        current_temp: 19,
+        weekly_stats: [
+            {
+                timestamp: new Date() - 3 * 86400000,
+                value: 13
+            },
+            {
+                timestamp: new Date() - 2 * 86400000,
+                value: 40
+            },
+            {
+                timestamp: new Date() - 86400000,
+                value: 25
+            },
+            {
+                timestamp: new Date(),
+                value: 9
+            },
+        ],
+        current_mode: '',
+        time: Math.floor(Date.now() / 1000),
+        sensors: []
+
+    }
+
+    function getEl(id) {
+        return document.getElementById(id)
+    }
+
+    const SET_TARGET = {
+        type: 'set',
+        value: 22,
+        element: 'target'
+    }
+    const SET_MODE = {
+        type: 'set',
+        value: 1,
+        element: 'mode'
+    }
+    const SET_STATUS = {
+        type: 'set',
+        value: 0,
+        element: 'status'
+    }
+    const setFunc = (action) => {
+        console.log(action.value)
+        getEl(action.element).innerHTML = action.value
+    }
+    const setFunc2 = (element, value) => {
+        // console.log(element, value)
+        getEl(element).innerHTML = value
+    }
+    const getFunc = (action) => {
+
+    }
+    const toggleFunc = (element) => {
+        switch (element) {
+            case 'mode':
+                getEl(element).innerHTML = getEl(element).innerHTML === 'Auto' ? 'Manual' : 'Auto'
+                break;
+            case 'status':
+                getEl(element).innerHTML = getEl(element).innerHTML === 'Off' ? 'On' : 'Off'
+                break;
+        }
+    }
+    const parseFunc = (action) => {
+        switch (action.type) {
+            case 'set':
+                setFunc(action)
+                break;
+            case 'get':
+                getFunc(action)
+                break;
+        }
+    }
+
+    const timeNowFunc = () => new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+    const setTime = () => {
+        getEl('time').innerHTML = timeNowFunc()
+        getEl('timedw').innerHTML = new Date().toLocaleString('en-EN', {weekday: 'short'}).toUpperCase() + ', ';
+        getEl('timedm').innerHTML = new Date().toLocaleString('en-GB', {day: 'numeric', month: 'short'}).toUpperCase();
+        // console.log('time')
+        setTimeout(setTime, 1000)
+    }
+    const successCallback = (position) => {
+        // console.log(position);
+        lat = position.coords.latitude
+        lon = position.coords.longitude
+        haveLocation = true
+        updateWeather()
+    };
+    const errorCallback = (error) => {
+        console.log(error);
+        alert('You should accept Geolocation to obtain weather updates!')
+    };
+
+    const openweather_mock_json = {
+        "coord": {
+            "lon": 23.5898,
+            "lat": 46.7558
+        },
+        "weather": [
+            {
+                "id": 800,
+                "main": "Clear",
+                "description": "clear sky",
+                "icon": "01d"
+            }
+        ],
+        "base": "stations",
+        "main": {
+            "temp": 20.14,
+            "feels_like": 18.99,
+            "temp_min": 20.14,
+            "temp_max": 20.14,
+            "pressure": 1018,
+            "humidity": 30
+        },
+        "visibility": 10000,
+        "wind": {
+            "speed": 4.63,
+            "deg": 140
+        },
+        "clouds": {
+            "all": 0
+        },
+        "dt": 1683046858,
+        "sys": {
+            "type": 1,
+            "id": 6913,
+            "country": "RO",
+            "sunrise": 1682996990,
+            "sunset": 1683048920
+        },
+        "timezone": 10800,
+        "id": 681290,
+        "name": "Cluj-Napoca",
+        "cod": 200
+    }
+    const openmeteo_mock_json = {
+        "latitude": 46.75,
+        "longitude": 23.5625,
+        "generationtime_ms": 1.2600421905517578,
+        "utc_offset_seconds": 10800,
+        "timezone": "Europe/Bucharest",
+        "timezone_abbreviation": "EEST",
+        "elevation": 430,
+        "current_weather": {
+            "temperature": 15.3,
+            "windspeed": 6.8,
+            "winddirection": 183,
+            "weathercode": 0,
+            "is_day": 0,
+            "time": "2023-05-02T22:00"
+        },
+        "daily_units": {
+            "time": "iso8601",
+            "weathercode": "wmo code",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C"
+        },
+        "daily": {
+            "time": [
+                "2023-04-29",
+                "2023-04-30",
+                "2023-05-01",
+                "2023-05-02",
+                "2023-05-03",
+                "2023-05-04",
+                "2023-05-05"
+            ],
+            "weathercode": [
+                3,
+                3,
+                2,
+                3,
+                3,
+                80,
+                3
+            ],
+            "temperature_2m_max": [
+                15.9,
+                18.1,
+                20,
+                21.8,
+                21.4,
+                19.3,
+                19
+            ],
+            "temperature_2m_min": [
+                2.7,
+                6.6,
+                6.5,
+                7.1,
+                9.3,
+                8.8,
+                7.5
+            ]
+        }
+    }
+    const setWeatherData = ({icon, main_temp, city, temp_max, temp_min, time}) => {
+        getEl('weather-update-button').classList.add('hidden')
+        getEl('weather-data').classList.remove('hidden');
+        getEl('weather-update-button2').classList.remove('hidden');
+        getEl('weather-icon').src = `http://openweathermap.org/img/w/${icon}.png`
+        getEl('wct').innerText = main_temp + '°C'
+        getEl('wcc').innerText = city
+        getEl('wcmax').innerText = temp_max
+        getEl('wcmin').innerText = temp_min
+        getEl('wut').innerText = time
+    }
+    const parseOpenWeatherData = (json) => {
+        return {
+            icon: json.weather[0].icon,
+            main_temp: json.main.temp,
+            city: json.name,
+            temp_max: json.main.temp_max,
+            temp_min: json.main.temp_min,
+            time:timeNowFunc()
+        }
+    }
+    const getIconId = (w, is_day) => {
+        // console.log(w)
+        let res
+        if (w === 0) {
+            res = '01'
+        } else if (w === 1) {
+            res = '02'
+        } else if (w === 2) {
+            res = '03'
+        } else if (w === 3) {
+            res = '04'
+        } else if (w === 45 || w === 48) {
+            res = '50'
+        } else if ((w >= 51 && w <= 57) || w === 65 || (w >= 80 && w <= 82)) {
+            res = '09'
+        } else if (w >= 61 && w <= 63) {
+            res = '10'
+        } else if ((w >= 66 && w <= 77) || (w >= 85 && w <= 86)) {
+            res = '13'
+        } else if (w >= 95 && w <= 99) {
+            res = '11'
+        }
+        return res + (is_day ? 'd' : 'n')
+    }
+    const getCityFromLatLong = () => {
+        return fetch(`https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}`).then(res => res.json()).then(json => json.address.city)
+    }
+    const parseOpenMeteoData = async (json) => {
+        let icon = getIconId(json.current_weather.weathercode, json.current_weather.is_day)
+        // console.log(icon)
+        let city = await getCityFromLatLong()
+        // console.log(city)
+        return {
+            icon: icon,
+            main_temp: json.current_weather.temperature,
+            city: city,
+            temp_max: json.daily.temperature_2m_max[3],
+            temp_min: json.daily.temperature_2m_min[3],
+            time:timeNowFunc()
+        }
+    }
+    const openMeteoUpdater = async () => {
+        if (use_mock) {
+            // console.log('mock')
+            setWeatherData(await parseOpenMeteoData(openmeteo_mock_json))
+        } else {
+            // console.log('fetch')
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&current_weather=true&past_days=3&forecast_days=4&timezone=auto`).then(res => res.json()).then(async json => {
+                    // console.log(json)
+                    setWeatherData(await parseOpenMeteoData(json))
+                }
+            )
+        }
+    }
+    const openWeatherUpdater = () => {
+        if (use_mock) {
+            console.log('mock')
+            setWeatherData(parseOpenWeatherData(openweather_mock_json))
+        } else {
+            console.log('fetch')
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`).then(res => res.json()).then(json => {
+                    console.log(json)
+                    setWeatherData(parseOpenWeatherData(json))
+                }
+            )
+        }
+    }
+    const updateWeather = () => {
+        // openWeatherUpdater()
+        openMeteoUpdater()
+    }
+    const weatherButtonOnClick = () => {
+        console.log('weather button click')
+        if (haveLocation) {
+            updateWeather()
+        } else {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        }
+        // setTimeout(weatherButtonOnClick, 300000)
+    }
+    const setOnclick = (element, func) => {
+        getEl(element).onclick = func
+    }
+    const updateWeeklyStats = (statsArray) => {
+        let max = 0
+        for (let e of statsArray) {
+            // console.log(e)
+            if (e.value > max) max = e.value
+        }
+        for (let i = 1; i <= 7; i++) {
+            for (let e of statsArray) {
+                // console.log(e)
+                const now = new Date().getTime() - ((4 - i) * 86400000);
+                let startOfDay = now - (now % 86400000);
+                let endDate = startOfDay + 86400000;
+                getEl(`wv${i}`).parentElement.parentElement.children[1].innerHTML = new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short'}).toUpperCase();
+                if (i <= 4) {
+                    if (e.timestamp >= startOfDay && e.timestamp <= endDate) {
+                        getEl(`wv${i}`).style.height = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                        getEl(`wv${i}t`).innerHTML = e.value.toString()
+                    }
+                } else {
+                    getEl(`wv${i}`).style.height = MIN_DAY_HEIGHT.toString() + '%'
+                    getEl(`wv${i}t`).innerHTML = '-'
+                }
+            }
+        }
+    }
+    const initiateScenesOnClick = () => {
+        function unactivateAllScenes(){
+            let arr = document.querySelectorAll(".scene-card");
+            for (let i = 0; i < arr.length; i++) {
+            arr[i].closest('div').classList.remove('active')
+            }
+        }
+
+        let scenes = document.querySelectorAll(".scene-card");
+        for (let i = 0; i < scenes.length; i++) {
+            scenes[i].onclick = (e) => {
+                // console.log(e.target.closest('div').classList.toggle('active'))
+                console.log('scene click')
+                if (!e.target.closest('div').classList.contains('active')) {
+                    unactivateAllScenes()
+                    e.target.closest('div').classList.add('active')
+                }
+            }
+        }
+    }
+
+    const initialization = () => {
+        // parseFunc(SET_TARGET)
+        // parseFunc(SET_MODE)
+        // parseFunc(SET_STATUS)
+        setOnclick('navbar-title', () => {
+            alert("This is thermostat project :))")
+        })
+        setOnclick('mode', () => {
+            toggleFunc('mode')
+        })
+        setOnclick('status', () => {
+            toggleFunc('status')
+        })
+        setTime()
+        setFunc2('ctv', INITIAL_JSON.current_temp) //+ '°'
+        setFunc2('target', INITIAL_JSON.target_temp)
+        setFunc2('wifi-ssid', INITIAL_JSON.wifiSsid)
+        setFunc2('wifi-rssi', INITIAL_JSON.wifiRssi + 'dB')
+        setOnclick('weather-update-button', weatherButtonOnClick)
+        setOnclick('weather-update-button2', weatherButtonOnClick)
+        weatherButtonOnClick()
+        initiateScenesOnClick()
+        updateWeeklyStats(INITIAL_JSON.weekly_stats)
+    }
+</script>
+</body>
+</html>

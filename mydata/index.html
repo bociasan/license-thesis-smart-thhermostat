@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div id="main-container">
+    <div id="navbar">
+        <div id="navbar-left">
+            <div style="height: inherit;width: 50px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+                    <rect width="256" height="256" fill="none"/>
+                    <path d="M92.9,166.1a50.7,50.7,0,0,1,70.2,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <path d="M59,132.1a98.8,98.8,0,0,1,138,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <path d="M25.1,98.2a146.6,146.6,0,0,1,205.8,0" fill="none" stroke="var(--icon-color)"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" stroke-width="24"/>
+                    <circle cx="128" cy="200" r="16" fill="var(--icon-color)"/>
+                </svg>
+            </div>
+            <div style="white-space: nowrap;">WiFi Name</div>
+        </div>
+        <div id="navbar-title">My Thermostat</div>
+        <div id="navbar-right">B</div>
+    </div>
+    <div class="flex-container">
+        <div class="side">
+            <div class="fgs1 fd-row">
+                <div class="card card1">
+                    <div class="card-title">
+                        CLIMATE
+                    </div>
+                    <button class="card-button" id="mode">Auto</button>
+                </div>
+                <div class="card card1">
+                    <div class="card-title">
+                        STATUS
+                    </div>
+                    <button class="card-button" id="status">On</button>
+                </div>
+                <div class="card card1">
+                    <div class="card-title">
+                        TARGET
+                    </div>
+                    <div id="target">
+                    </div>
+                </div>
+            </div>
+            <div class="card card2">
+                <div class="card-title card-title-xl left" style="height: 14%;">
+                    WEEKLY STATS
+                </div>
+                <div class="week-container">
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv1" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Mon</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv2" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Tue</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv3" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Wed</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv4" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Thu</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv5" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Fri</div>
+                    </div>
+                    <div class="day">
+                        <div class="week-column">
+                            <div id="wv6" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Sat</div>
+                    </div>
+                    <div class="day" style="margin-right: 0;">
+                        <div class="week-column">
+                            <div id="wv7" class="wv">
+                            </div>
+                        </div>
+                        <div class="week-title">Sun</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="side">
+            <div class="fgs1">
+                <div class="card card3">
+                    <div class="card-title card-title-xl left ">
+                        CURRENT TEMP
+                    </div>
+                    <div>
+                        22
+                    </div>
+                </div>
+                <div class="fgs1 fd-column">
+                    <div class="card card1">
+                        <div class="card-title left">
+                            TIME
+                        </div>
+                    </div>
+                    <div class="card card1">7</div>
+                </div>
+            </div>
+            <div class="card card4">8</div>
+
+        </div>
+    </div>
+</div>
+<script src="index.js"></script>
+</body>
+</html>

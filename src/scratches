@@ -1,0 +1,38 @@
+<div id="weather-evening" class="weather-card hidden">
+                            <div class="card-title left">
+                                EVENING
+                            </div>
+                            <span>
+                                sadasdasdasdasasdasdasasdasasdsaddsa
+                            </span>
+                        </div>
+                        <div id="weather-day" class="weather-card hidden">
+                            <div class="card-title left">
+                                DAY
+                            </div>
+                            <span>
+                                asdasdasdsadsadasdsadsadsadasdasdasdsad
+                            </span>
+                        </div>
+
+
+const setWeatherTime = (time) => {
+        if (time === 'night'){
+            getEl('weather-evening').classList.remove('hidden');
+            getEl('weather-day').classList.add('hidden');
+        } else {
+            getEl('weather-evening').classList.add('hidden');
+            getEl('weather-day').classList.remove('hidden');
+        }
+
+
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`).then(res=>res.json()).then(json => console.log(json))
+    }
+
+    getEl('weather-card').onclick = ()=>{
+                if (getEl('weather-evening').classList.contains('hidden')){
+                    setWeatherTime('night')
+                } else {
+                    setWeatherTime('day')
+                }
+            }

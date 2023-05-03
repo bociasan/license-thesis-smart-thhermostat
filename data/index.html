@@ -445,8 +445,8 @@
                         TARGET
                     </div>
                     <div style="display: flex">
-                        <span id="target" style="font-size: 110px;">-</span>
-                        <span style="font-size: 90px">°</span>
+                        <span id="target" style="font-size: 70px;">-</span>
+                        <span style="font-size: 60px;">°</span>
                     </div>
 
                 </div>
@@ -519,11 +519,11 @@
             <div class="fgs1">
                 <div class="card card3">
                     <div class="card-title card-title-xl left ">
-                        CURRENT TEMP
+                        CURRENT INFO
                     </div>
-                    <div style="display: flex">
-                        <span id="ctv" style="font-size: 240px">-</span>
-                        <span style="font-size: 150px">°</span>
+                    <div style="display: flex; margin: auto;">
+                        <span id="ctv" style="font-size: 180px">-</span>
+                        <span style="font-size: 140px">°</span>
                     </div>
                 </div>
                 <div class="flex-time-weather">
@@ -629,7 +629,7 @@
                             <path d="M0 4a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4zm4-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H4z"/>
                         </svg>
                     </div>
-                    <div class="scene-card active">
+                    <div class="scene-card">
                         <span class="scene-title" style="margin-top: 7px">SUMMER</span>
                         <svg style="color:var(--accent)" xmlns="http://www.w3.org/2000/svg" width="44" height="44"
                              fill="currentcolor"
@@ -662,45 +662,10 @@
 <script>
     let gateway = `ws://${window.location.hostname}/ws`;
     let websocket;
-
-    const use_mock = false
-    const OPENWEATHER_API_KEY = '3a00a550579c64e2a2f4e723392179c0'
-    let lat, lon, haveLocation = false;
+    let lat, lon, city
     const MIN_DAY_HEIGHT = 5
-    const INITIAL_JSON = {
-        wifiSsid: 'Bociasan',
-        wifiRssi: -13,
-        mode: 1,
-        status: 1,
-        target_temp: 20,
-        current_temp: 19,
-        weekly_stats: [
-            {
-                timestamp: new Date() - 3 * 86400000,
-                value: 13
-            },
-            {
-                timestamp: new Date() - 2 * 86400000,
-                value: 40
-            },
-            {
-                timestamp: new Date() - 86400000,
-                value: 25
-            },
-            {
-                timestamp: new Date(),
-                value: 9
-            },
-        ],
-        current_mode: '',
-        time: Math.floor(Date.now() / 1000),
-        sensors: []
+    const getEl = (id) => document.getElementById(id)
 
-    }
-
-    function getEl(id) {
-        return document.getElementById(id)
-    }
 
     const SET_TARGET = {
         type: 'set',
@@ -757,122 +722,7 @@
         // console.log('time')
         setTimeout(setTime, 1000)
     }
-    const successCallback = (position) => {
-        // console.log(position);
-        lat = position.coords.latitude
-        lon = position.coords.longitude
-        haveLocation = true
-        updateWeather()
-    };
-    const errorCallback = (error) => {
-        console.log(error);
-        alert('You should accept Geolocation to obtain weather updates!')
-    };
 
-    const openweather_mock_json = {
-        "coord": {
-            "lon": 23.5898,
-            "lat": 46.7558
-        },
-        "weather": [
-            {
-                "id": 800,
-                "main": "Clear",
-                "description": "clear sky",
-                "icon": "01d"
-            }
-        ],
-        "base": "stations",
-        "main": {
-            "temp": 20.14,
-            "feels_like": 18.99,
-            "temp_min": 20.14,
-            "temp_max": 20.14,
-            "pressure": 1018,
-            "humidity": 30
-        },
-        "visibility": 10000,
-        "wind": {
-            "speed": 4.63,
-            "deg": 140
-        },
-        "clouds": {
-            "all": 0
-        },
-        "dt": 1683046858,
-        "sys": {
-            "type": 1,
-            "id": 6913,
-            "country": "RO",
-            "sunrise": 1682996990,
-            "sunset": 1683048920
-        },
-        "timezone": 10800,
-        "id": 681290,
-        "name": "Cluj-Napoca",
-        "cod": 200
-    }
-    const openmeteo_mock_json = {
-        "latitude": 46.75,
-        "longitude": 23.5625,
-        "generationtime_ms": 1.2600421905517578,
-        "utc_offset_seconds": 10800,
-        "timezone": "Europe/Bucharest",
-        "timezone_abbreviation": "EEST",
-        "elevation": 430,
-        "current_weather": {
-            "temperature": 15.3,
-            "windspeed": 6.8,
-            "winddirection": 183,
-            "weathercode": 0,
-            "is_day": 0,
-            "time": "2023-05-02T22:00"
-        },
-        "daily_units": {
-            "time": "iso8601",
-            "weathercode": "wmo code",
-            "temperature_2m_max": "°C",
-            "temperature_2m_min": "°C"
-        },
-        "daily": {
-            "time": [
-                "2023-04-29",
-                "2023-04-30",
-                "2023-05-01",
-                "2023-05-02",
-                "2023-05-03",
-                "2023-05-04",
-                "2023-05-05"
-            ],
-            "weathercode": [
-                3,
-                3,
-                2,
-                3,
-                3,
-                80,
-                3
-            ],
-            "temperature_2m_max": [
-                15.9,
-                18.1,
-                20,
-                21.8,
-                21.4,
-                19.3,
-                19
-            ],
-            "temperature_2m_min": [
-                2.7,
-                6.6,
-                6.5,
-                7.1,
-                9.3,
-                8.8,
-                7.5
-            ]
-        }
-    }
     const setWeatherData = ({icon, main_temp, city, temp_max, temp_min, time}) => {
         getEl('weather-update-button').classList.add('hidden')
         getEl('weather-data').classList.remove('hidden');
@@ -886,16 +736,7 @@
         getEl('wcmin').innerText = temp_min
         getEl('wut').innerText = time
     }
-    const parseOpenWeatherData = (json) => {
-        return {
-            icon: json.weather[0].icon,
-            main_temp: json.main.temp,
-            city: json.name,
-            temp_max: json.main.temp_max,
-            temp_min: json.main.temp_min,
-            time: timeNowFunc()
-        }
-    }
+
     const getIconId = (w, is_day) => {
         // console.log(w)
         let res
@@ -920,14 +761,25 @@
         }
         return res + (is_day ? 'd' : 'n')
     }
-    const getCityFromLatLong = () => {
-        return fetch(`https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}`).then(res => res.json()).then(json => json.address.city)
+    const getLatLongFromCity = (city) => {
+        // console.log(city)
+        if (city) {
+            return fetch(`https://geocode.maps.co/search?q=${city}&format=json`).then(res => res.json()).then(json => {
+                if (json.length > 0) {
+                    // console.log(json)
+                    lat = json[0].lat
+                    lon = json[0].lon
+                    return {success: `City found! lat=${lat} lon=${lon}`}
+                } else {
+                    return {error: 'City not found! Verify if you wrote the correct name of the city... '}
+                }
+            })
+        } else {
+            return {error: 'City is undefined!'}
+        }
     }
     const parseOpenMeteoData = async (json) => {
         let icon = getIconId(json.current_weather.weathercode, json.current_weather.is_day)
-        // console.log(icon)
-        let city = await getCityFromLatLong()
-        // console.log(city)
         return {
             icon: icon,
             main_temp: json.current_weather.temperature,
@@ -937,56 +789,33 @@
             time: timeNowFunc()
         }
     }
-    const openMeteoUpdater = async () => {
-        if (use_mock) {
-            // console.log('mock')
-            setWeatherData(await parseOpenMeteoData(openmeteo_mock_json))
-        } else {
-            // console.log('fetch')
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&current_weather=true&past_days=3&forecast_days=4&timezone=auto`).then(res => res.json()).then(async json => {
-                    // console.log(json)
-                    setWeatherData(await parseOpenMeteoData(json))
-                }
-            )
-        }
-    }
-    const openWeatherUpdater = () => {
-        if (use_mock) {
-            console.log('mock')
-            setWeatherData(parseOpenWeatherData(openweather_mock_json))
-        } else {
-            console.log('fetch')
-
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`).then(res => res.json()).then(json => {
-                    console.log(json)
-                    setWeatherData(parseOpenWeatherData(json))
-                }
-            )
-        }
-    }
     const updateWeather = () => {
-        // openWeatherUpdater()
-        openMeteoUpdater()
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&current_weather=true&past_days=3&forecast_days=4&timezone=auto`).then(res => res.json()).then(async json => {
+                // console.log(json)
+                setWeatherData(await parseOpenMeteoData(json))
+            }
+        )
     }
     const weatherButtonOnClick = () => {
         console.log('weather button click')
-        if (haveLocation) {
-            updateWeather()
-        } else {
-            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-        }
+        getLatLongFromCity(city).then((e) => {
+            if (e.success) {
+                updateWeather()
+            } else {
+                alert(e.error)
+            }
+        })
         // setTimeout(weatherButtonOnClick, 300000)
     }
-    const setOnclick = (element, func) => {
-        getEl(element).onclick = func
-    }
+    const setOnclick = (element, func) => getEl(element).onclick = func
     const updateWeeklyStats = (statsArray) => {
         let max = 0
         for (let e of statsArray) {
             // console.log(e)
-            if (e.value > max) max = e.value
+            if (e[1] > max) max = e[1]
         }
         for (let i = 1; i <= 7; i++) {
+            let haveSet = false
             for (let e of statsArray) {
                 // console.log(e)
                 const now = new Date().getTime() - ((4 - i) * 86400000);
@@ -995,27 +824,31 @@
                 getEl(`wv${i}`).parentElement.parentElement.children[1].innerHTML =
                     new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short', day: 'numeric'}).toUpperCase();
                 if (i <= 4) {
-                    if (e.timestamp >= startOfDay && e.timestamp <= endDate) {
-                        // getEl(`wv${i}`).style.height = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
-                        getEl(`wv${i}`).style.maxHeight = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
-                        getEl(`wv${i}t`).innerHTML = e.value.toString()
+                    if (e[0] >= startOfDay && e[0] <= endDate) {
+                        haveSet = true
+                        getEl(`wv${i}`).style.maxHeight = (e[1] / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                        getEl(`wv${i}t`).innerHTML = e[1].toString()
                     }
                 } else {
-                    // getEl(`wv${i}`).style.height = MIN_DAY_HEIGHT.toString() + '%'
                     getEl(`wv${i}`).style.maxHeight = MIN_DAY_HEIGHT.toString() + '%'
-                    // getEl(`wv${i}t`).innerHTML = '-'
+                }
+            }
+            if (i <= 4) {
+                if (!haveSet && statsArray[i-1][0]===0) {
+                    // console.log(`set for i=${i} | value=${statsArray[i-1][1]}`)
+                    getEl(`wv${i}`).style.maxHeight = (statsArray[i-1][1] / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                    getEl(`wv${i}t`).innerHTML = statsArray[i-1][1].toString()
                 }
             }
         }
     }
-    const initiateScenesOnClick = () => {
-        function unactivateAllScenes() {
-            let arr = document.querySelectorAll(".scene-card");
-            for (let i = 0; i < arr.length; i++) {
-                arr[i].closest('div').classList.remove('active')
-            }
+    function unactivateAllScenes() {
+        let arr = document.querySelectorAll(".scene-card");
+        for (let i = 0; i < arr.length; i++) {
+            arr[i].closest('div').classList.remove('active')
         }
-
+    }
+    const initiateScenesOnClick = () => {
         let scenes = document.querySelectorAll(".scene-card");
         for (let i = 0; i < scenes.length; i++) {
             scenes[i].onclick = (e) => {
@@ -1030,31 +863,26 @@
     }
 
     const initialization = () => {
-        // parseFunc(SET_TARGET)
-        // parseFunc(SET_MODE)
-        // parseFunc(SET_STATUS)
-        setOnclick('navbar-title', () => {
-            alert("This is thermostat project :))")
-        })
+        initWebSocket();
+
+        setOnclick('navbar-title', () => alert("This is thermostat project :))"))
         setOnclick('mode', () => {
             // toggleFunc('mode')
         })
         setOnclick('status', () => {
             // toggleFunc('status')
         })
-        setTime()
-        setFunc2('ctv', INITIAL_JSON.current_temp) //+ '°'
-        setFunc2('target', INITIAL_JSON.target_temp)
-        setFunc2('wifi-ssid', INITIAL_JSON.wifiSsid)
-        setFunc2('wifi-rssi', INITIAL_JSON.wifiRssi + 'dB')
-        setFunc2('mode', INITIAL_JSON.mode? 'Auto':'Manual')
-        setFunc2('status', INITIAL_JSON.status? 'On':'Off')
         setOnclick('weather-update-button', weatherButtonOnClick)
         setOnclick('weather-update-button2', weatherButtonOnClick)
-        weatherButtonOnClick()
         initiateScenesOnClick()
-        updateWeeklyStats(INITIAL_JSON.weekly_stats)
-        initWebSocket();
+        setTime()
+        // weatherButtonOnClick()
+
+
+        // parseFunc(SET_TARGET)
+        // parseFunc(SET_MODE)
+        // parseFunc(SET_STATUS)
+
     }
 
 
@@ -1070,36 +898,47 @@
         type: 'get',
         value: 'initial_state'
     }
-    function getInitialState(){
+
+    function getInitialState() {
         console.log('sent initial state request!')
         websocket.send(JSON.stringify(INITIAL_STATE_REQ));
     }
 
+    const setActiveScene = (index) =>{
+        unactivateAllScenes()
+        document.querySelectorAll(".scene-card")[index].closest('div').classList.add('active')
+    }
+
+    const updateAllData = (json) => {
+        console.log(json)
+        setFunc2('ctv', json.current_temp)
+        setFunc2('target', json.target)
+        setFunc2('wifi-ssid', json.ssid)
+        setFunc2('wifi-rssi', json.rssi + 'dB')
+        setFunc2('mode', json.mode ? 'Auto' : 'Manual')
+        setFunc2('status', json.status ? 'On' : 'Off')
+        updateWeeklyStats(json.weekly_stats)
+        city = json.city
+        weatherButtonOnClick()
+
+        setActiveScene(json.scene)
+    }
+
     function onOpen(event) {
         console.log('Connection opened');
-        setTimeout(()=>{
+        // setTimeout(() => {
             getInitialState();
-        }, 300)
+        // }, 300)
     }
 
     function onClose(event) {
         console.log('Connection closed');
-        setTimeout(initWebSocket, 2000);
+        // setTimeout(initWebSocket, 2000);
     }
 
     function onMessage(event) {
-        console.log(event.data);
-        // var myObj = JSON.parse(event.data);
-
-
-
-        // var keys = Object.keys(myObj);
-        //
-        // for (var i = 0; i < keys.length; i++){
-        //     var key = keys[i];
-        //     document.getElementById(key).innerHTML = myObj[key];
-        //     document.getElementById("slider"+ (i+1).toString()).value = myObj[key];
-        // }
+        // console.log(event.data);
+        updateAllData(JSON.parse(event.data))
     }
 </script>
 </body>

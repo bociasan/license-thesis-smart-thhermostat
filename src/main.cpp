@@ -33,8 +33,17 @@ String getInitialStateString(){
   state["esp_time"] = esp_time;
   state["ssid"] = WiFi.SSID();
   state["rssi"] = WiFi.RSSI();
-  state["weekly_stats"] = weekly_stats;
+  state["weekly_stats"][0][0] = weekly_stats[0][0];
+  state["weekly_stats"][0][1] = weekly_stats[0][1];
+  state["weekly_stats"][1][0] = weekly_stats[1][0];
+  state["weekly_stats"][1][1] = weekly_stats[1][1];
+  state["weekly_stats"][2][0] = weekly_stats[2][0];
+  state["weekly_stats"][2][1] = weekly_stats[2][1];
+  state["weekly_stats"][3][0] = weekly_stats[3][0];
+  state["weekly_stats"][3][1] = weekly_stats[3][1];
   state["city"] = city;
+  state["reponse_type"] = String("get");
+  state["response_value"] = String("initial_state");
   // state["sensors"][0] = WiFi.RSSI();
 
   // state[""] = ;
@@ -42,8 +51,8 @@ String getInitialStateString(){
   return JSON.stringify(state);
 }
 
-void notifyClients(String sliderValues) {
-  ws.textAll(sliderValues);
+void notifyClients(String json_string) {
+  ws.textAll(json_string);
 }
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocketClient *client) {
@@ -57,13 +66,13 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocket
     // String jsonString = JSON.stringify(payload);
     // ws.textAll(jsonString);
 
-
     if (payload["type"] == String("get")){
       if (payload["value"] == String("initial_state"))
       client->text(getInitialStateString());
     } 
   }
 }
+
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
@@ -114,7 +123,7 @@ void setup()
 
   // Route for root index.html
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/index.html", "text/html"); });
+    { request->send(LittleFS, "/index.html", "text/html"); });
   server.onNotFound(notFound);
   server.begin();
   ws.onEvent(onEvent);

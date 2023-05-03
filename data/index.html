@@ -214,6 +214,33 @@
             cursor: pointer;
         }
 
+        #wbsvg, #weather-update-button {
+            margin-right: 4px;
+            animation: rotate-center 1.5s cubic-bezier(0.770, 0.000, 0.175, 1.000) both;
+        }
+
+        #wbsvg.open, #weather-update-button.open {
+            animation: rotate-center2 1.5s cubic-bezier(0.770, 0.000, 0.175, 1.000) both;
+        }
+
+        @keyframes rotate-center {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotate-center2 {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         .left {
             box-sizing: border-box;
             align-self: flex-start;
@@ -260,8 +287,6 @@
             display: flex;
             flex-direction: column-reverse;
             /*background-color: red;*/
-
-
         }
 
         .wv {
@@ -272,7 +297,7 @@
             /*padding-top: 10px;*/
             overflow: hidden;
             box-sizing: border-box;
-            transition: max-height 3s cubic-bezier(.17,.65,.28,.99);
+            transition: max-height 3s cubic-bezier(.17, .65, .28, .99);
             max-height: 0;
             height: 100%;
             padding-top: 10px;
@@ -327,7 +352,7 @@
             transition: visibility 0s linear 1s, opacity 0.5s ease-in-out;
         }
 
-        #weather-update-button:hover {
+        #weather-update-button:hover, #weather-update-button2:hover {
             cursor: pointer;
         }
 
@@ -516,16 +541,16 @@
                         <div style="width:100%;display: flex; justify-content: space-between; align-items: center">
                             <span class="card-title left">WEATHER</span>
                             <div id="weather-update-button2" style="display: flex; align-items: center;" class="hidden">
-                                    <svg width="15px" height="15px" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                         viewBox="0 0 118.04 122.88">
-                                        <path d="M16.08,59.26A8,8,0,0,1,0,59.26a59,59,0,0,1,97.13-45V8a8,8,0,1,1,16.08,0V33.35a8,8,0,0,1-8,8L80.82,43.62a8,8,0,1,1-1.44-15.95l8-.73A43,43,0,0,0,16.08,59.26Zm22.77,19.6a8,8,0,0,1,1.44,16l-10.08.91A42.95,42.95,0,0,0,102,63.86a8,8,0,0,1,16.08,0A59,59,0,0,1,22.3,110v4.18a8,8,0,0,1-16.08,0V89.14h0a8,8,0,0,1,7.29-8l25.31-2.3Z"></path>
-                                    </svg>
-
+                                <svg id="wbsvg" width="15px" height="15px" data-name="Layer 1"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 118.04 122.88">
+                                    <path d="M16.08,59.26A8,8,0,0,1,0,59.26a59,59,0,0,1,97.13-45V8a8,8,0,1,1,16.08,0V33.35a8,8,0,0,1-8,8L80.82,43.62a8,8,0,1,1-1.44-15.95l8-.73A43,43,0,0,0,16.08,59.26Zm22.77,19.6a8,8,0,0,1,1.44,16l-10.08.91A42.95,42.95,0,0,0,102,63.86a8,8,0,0,1,16.08,0A59,59,0,0,1,22.3,110v4.18a8,8,0,0,1-16.08,0V89.14h0a8,8,0,0,1,7.29-8l25.31-2.3Z"></path>
+                                </svg>
                                 <span id="wut">00:00</span>
                             </div>
 
                         </div>
-                        <div style="width: 50px; height: 50px; position: absolute; top:55%;  transform: translate(0, -50%);"
+                        <div style="width: 50px; height: 50px; position: absolute; top:40%;  transform: translate(0, -50%);"
                              id="weather-update-button">
                             <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 118.04 122.88">
@@ -849,6 +874,8 @@
         getEl('weather-update-button').classList.add('hidden')
         getEl('weather-data').classList.remove('hidden');
         getEl('weather-update-button2').classList.remove('hidden');
+        if (!getEl('weather-update-button').classList.contains('hidden')) getEl('weather-update-button').classList.toggle('open');
+        getEl('wbsvg').classList.toggle('open');
         getEl('weather-icon').src = `http://openweathermap.org/img/w/${icon}.png`
         getEl('wct').innerText = main_temp + '°C'
         getEl('wcc').innerText = city
@@ -863,7 +890,7 @@
             city: json.name,
             temp_max: json.main.temp_max,
             temp_min: json.main.temp_min,
-            time:timeNowFunc()
+            time: timeNowFunc()
         }
     }
     const getIconId = (w, is_day) => {
@@ -904,7 +931,7 @@
             city: city,
             temp_max: json.daily.temperature_2m_max[3],
             temp_min: json.daily.temperature_2m_min[3],
-            time:timeNowFunc()
+            time: timeNowFunc()
         }
     }
     const openMeteoUpdater = async () => {
@@ -963,7 +990,7 @@
                 let startOfDay = now - (now % 86400000);
                 let endDate = startOfDay + 86400000;
                 getEl(`wv${i}`).parentElement.parentElement.children[1].innerHTML =
-                    new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short', day:'numeric'}).toUpperCase();
+                    new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short', day: 'numeric'}).toUpperCase();
                 if (i <= 4) {
                     if (e.timestamp >= startOfDay && e.timestamp <= endDate) {
                         // getEl(`wv${i}`).style.height = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
@@ -979,12 +1006,13 @@
         }
     }
     const initiateScenesOnClick = () => {
-        function unactivateAllScenes(){
+        function unactivateAllScenes() {
             let arr = document.querySelectorAll(".scene-card");
             for (let i = 0; i < arr.length; i++) {
-            arr[i].closest('div').classList.remove('active')
+                arr[i].closest('div').classList.remove('active')
             }
         }
+
         let scenes = document.querySelectorAll(".scene-card");
         for (let i = 0; i < scenes.length; i++) {
             scenes[i].onclick = (e) => {
@@ -1018,7 +1046,7 @@
         setFunc2('wifi-rssi', INITIAL_JSON.wifiRssi + 'dB')
         setOnclick('weather-update-button', weatherButtonOnClick)
         setOnclick('weather-update-button2', weatherButtonOnClick)
-        weatherButtonOnClick()
+        // weatherButtonOnClick()
         initiateScenesOnClick()
         updateWeeklyStats(INITIAL_JSON.weekly_stats)
     }

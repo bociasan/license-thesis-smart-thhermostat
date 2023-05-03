@@ -14,6 +14,7 @@
             --icon-color: var(--accent);
             --button-background-color: #0030a923;
             --button-background-color-hover: #785dfe60;
+            --box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
             --gray: #00001f50;
 
             -webkit-user-select: none; /* Safari */
@@ -31,7 +32,7 @@
         body {
             height: 100%;
             margin: 0;
-            font-family: Bahnschrift;
+            font-family: Bahnschrift, serif;
         }
 
         #main-container {
@@ -47,6 +48,7 @@
             min-width: 800px;
             display: flex;
             flex-direction: column;
+            box-shadow: var(--box-shadow);
         }
 
         #navbar {
@@ -126,6 +128,7 @@
             align-items: center;
             padding: var(--card-padding);
             flex: 1;
+            box-shadow: var(--box-shadow);
         }
 
         .card1 {
@@ -143,7 +146,7 @@
             background-color: transparent;
             padding: 0;
             margin-top: 0;
-
+            box-shadow: none;
         }
 
         .card3 {
@@ -267,7 +270,12 @@
             background-color: white;
             /*height: 15%;*/
             /*padding-top: 10px;*/
+            overflow: hidden;
             box-sizing: border-box;
+            transition: max-height 3s cubic-bezier(.17,.65,.28,.99);
+            max-height: 0;
+            height: 100%;
+            padding-top: 10px;
         }
 
         .wvt {
@@ -336,6 +344,7 @@
             align-items: center;
             transition-duration: 0.15s;
             transition-timing-function: ease-in-out;
+            /*box-shadow: var(--box-shadow);*/
         }
 
         .scene-card:hover {
@@ -425,7 +434,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv1" class="wv">
-                                <span id="wv1t" class="wvt">-</span>
+                                <span id="wv1t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">MON</div>
@@ -433,7 +442,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv2" class="wv">
-                                <span id="wv2t" class="wvt">-</span>
+                                <span id="wv2t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">TUE</div>
@@ -441,7 +450,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv3" class="wv">
-                                <span id="wv3t" class="wvt">-</span>
+                                <span id="wv3t" class="wvt"></span>
                             </div>
                         </div>
                         <span class="week-title">WED</span>
@@ -449,7 +458,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv4" class="wv">
-                                <span id="wv4t" class="wvt">-</span>
+                                <span id="wv4t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">THU</div>
@@ -457,7 +466,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv5" class="wv">
-                                <span id="wv5t" class="wvt">-</span>
+                                <span id="wv5t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">FRI</div>
@@ -465,7 +474,7 @@
                     <div class="day">
                         <div class="week-column">
                             <div id="wv6" class="wv">
-                                <span id="wv6t" class="wvt">-</span>
+                                <span id="wv6t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">SAT</div>
@@ -473,7 +482,7 @@
                     <div class="day" style="margin-right: 0;">
                         <div class="week-column">
                             <div id="wv7" class="wv">
-                                <span id="wv7t" class="wvt">-</span>
+                                <span id="wv7t" class="wvt"></span>
                             </div>
                         </div>
                         <div class="week-title">SUN</div>
@@ -629,7 +638,7 @@
     const use_mock = false
     const OPENWEATHER_API_KEY = '3a00a550579c64e2a2f4e723392179c0'
     let lat, lon, haveLocation = false;
-    const MIN_DAY_HEIGHT = 15
+    const MIN_DAY_HEIGHT = 5
     const INITIAL_JSON = {
         wifiSsid: 'Bociasan',
         wifiRssi: -13,
@@ -953,15 +962,18 @@
                 const now = new Date().getTime() - ((4 - i) * 86400000);
                 let startOfDay = now - (now % 86400000);
                 let endDate = startOfDay + 86400000;
-                getEl(`wv${i}`).parentElement.parentElement.children[1].innerHTML = new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short'}).toUpperCase();
+                getEl(`wv${i}`).parentElement.parentElement.children[1].innerHTML =
+                    new Date(startOfDay).toLocaleString('en-GB', {weekday: 'short', day:'numeric'}).toUpperCase();
                 if (i <= 4) {
                     if (e.timestamp >= startOfDay && e.timestamp <= endDate) {
-                        getEl(`wv${i}`).style.height = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                        // getEl(`wv${i}`).style.height = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
+                        getEl(`wv${i}`).style.maxHeight = (e.value / max * 100 + MIN_DAY_HEIGHT).toString() + '%'
                         getEl(`wv${i}t`).innerHTML = e.value.toString()
                     }
                 } else {
-                    getEl(`wv${i}`).style.height = MIN_DAY_HEIGHT.toString() + '%'
-                    getEl(`wv${i}t`).innerHTML = '-'
+                    // getEl(`wv${i}`).style.height = MIN_DAY_HEIGHT.toString() + '%'
+                    getEl(`wv${i}`).style.maxHeight = MIN_DAY_HEIGHT.toString() + '%'
+                    // getEl(`wv${i}t`).innerHTML = '-'
                 }
             }
         }
@@ -973,7 +985,6 @@
             arr[i].closest('div').classList.remove('active')
             }
         }
-
         let scenes = document.querySelectorAll(".scene-card");
         for (let i = 0; i < scenes.length; i++) {
             scenes[i].onclick = (e) => {

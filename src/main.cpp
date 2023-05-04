@@ -3,7 +3,8 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
-#include <Arduino_JSON.h>
+// #include <Arduino_JSON.h>
+#include <ArduinoJson.h>
 #include <credentials.h>
 #include <variables.h>
 
@@ -15,7 +16,10 @@ AsyncWebServer server(80);
 //Websocket
 AsyncWebSocket ws("/ws");
 
-JSONVar state;
+// JSONVar state;
+DynamicJsonDocument state(1024);
+StaticJsonDocument<256> response;
+StaticJsonDocument<256> item;
 
 const int LED_PIN = LED_BUILTIN;
 
@@ -48,11 +52,14 @@ String getInitialStateString(){
 
   // state[""] = ;
   // state[""] = ;
-  return JSON.stringify(state);
+  String res;
+  serializeJson(state, res);
+  return res;
+  // return JSON.stringify(state);
 }
 
 String getVariableString(String rparam){
-  JSONVar response;
+  // JSONVar response;
   response["rtype"] = "get";
 
   if (rparam == "mode"){
@@ -67,7 +74,10 @@ String getVariableString(String rparam){
     response["rparam"] = "scene";
     response["rvalue"] = scene;
   }
-  String res = JSON.stringify(response);
+  // String res = JSON.stringify(response);
+  String res;
+  serializeJson(response, res);
+  response.clear();
   Serial.println(res);
   return res;
 }
@@ -81,19 +91,20 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocket
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
     Serial.println((char*)data);
-    JSONVar item = JSON.parse((char*)data);
-    // payload["counter"] = (int)payload["counter"]+1;
-    // String jsonString = JSON.stringify(payload);
-    // ws.textAll(jsonString);
 
+    // JSONVar item = JSON.parse((char*)data);
+    deserializeJson(item, data);
     if (item["rtype"] == String("get")){
       if (item["rparam"] == String("initial_state")){
-        client->text(getInitialStateString());
+        // client->text(getInitialStateString());
+        notifyClients(getInitialStateString());
       }
       
     } else 
     if (item["rtype"] == String("set")){
-      String value = JSON.stringify(item["rvalue"]);
+      String value;
+      //value = JSON.stringify(item["rvalue"]);
+      serializeJson(item["rvalue"], value);
       if (item["rparam"] == String("mode")){
         mode = value.toInt();
         Serial.printf("Mode set to %d. Value is %s. \n", mode, value);
@@ -115,14 +126,15 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocket
         notifyClients(getVariableString("scene"));
       }
     }
+    item.clear();
   }
+  
 }
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
-      // client->text("{\"counter\":\"777\"}");
       break;
     case WS_EVT_DISCONNECT:
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
@@ -178,5 +190,5 @@ void setup()
 
 void loop()
 {
-  ws.cleanupClients();
+  // ws.cleanupClients();
 }

@@ -87,7 +87,7 @@
 
         #navbar-right {
             flex: 1;
-            width: 300px;
+            /*width: 300px;*/
             display: flex;
             justify-content: flex-end;
             /*padding-right: 10px;*/
@@ -423,7 +423,11 @@
             </div>
         </div>
         <div id="navbar-title">My Thermostat</div>
-        <div id="navbar-right"></div>
+        <div id="navbar-right">
+            <span id="alive-time">1 min</span>
+            <span id="alive" style="margin-left: 5px">alive</span>
+
+        </div>
     </div>
     <div class="flex-container">
         <div class="side">
@@ -670,7 +674,8 @@
         target: 0,
         current_temp: 0,
         scene: 0,
-        esp_time: 0,
+        esp_time: 159847002,
+        websocket_status: false,
         ssid: "Bociasan",
         rssi: 0,
         weekly_stats: [
@@ -695,37 +700,9 @@
         lat: undefined,
         lon: undefined
     }
-
-    const setFunc = (action) => {
-        console.log(action.value)
-        getEl(action.element).innerHTML = action.value
-    }
     const setFunc2 = (element, value) => {
         // console.log(element, value)
         getEl(element).innerHTML = value
-    }
-    const getFunc = (action) => {
-
-    }
-    // const toggleFunc = (element) => {
-    //     switch (element) {
-    //         case 'mode':
-    //             getEl(element).innerHTML = getEl(element).innerHTML === 'Auto' ? 'Manual' : 'Auto'
-    //             break;
-    //         case 'status':
-    //             getEl(element).innerHTML = getEl(element).innerHTML === 'Off' ? 'On' : 'Off'
-    //             break;
-    //     }
-    // }
-    const parseFunc = (action) => {
-        switch (action.type) {
-            case 'set':
-                setFunc(action)
-                break;
-            case 'get':
-                getFunc(action)
-                break;
-        }
     }
 
     const timeNowFunc = () => new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
@@ -736,7 +713,6 @@
         // console.log('time')
         setTimeout(setTime, 1000)
     }
-
     const setWeatherData = ({icon, main_temp, city, temp_max, temp_min, time}) => {
         getEl('weather-update-button').classList.add('hidden')
         getEl('weather-data').classList.remove('hidden');
@@ -750,7 +726,6 @@
         getEl('wcmin').innerText = temp_min
         getEl('wut').innerText = time
     }
-
     const getIconId = (w, is_day) => {
         // console.log(w)
         let res
@@ -900,60 +875,58 @@
         }
     }
     const initialization = () => {
-        initWebSocket();
+        setTimeout(() => {
+            console.log('initialize websocket!')
+            initWebSocket();
+        }, 1000)
 
         setOnclick('navbar-title', () => {
             // alert("This is thermostat project :))")
             updateHtmlData()
         })
         setOnclick('mode', () => {
-            sendSetRequest('mode', state.mode?0:1)
+            sendSetRequest('mode', state.mode ? 0 : 1)
         })
         setOnclick('status', () => {
-            sendSetRequest('status', state.statuss?0:1)
+            sendSetRequest('status', state.statuss ? 0 : 1)
         })
         setOnclick('weather-update-button', weatherButtonOnClick)
         setOnclick('weather-update-button2', weatherButtonOnClick)
         initiateScenesOnClick()
         setTime()
         // weatherButtonOnClick()
-
-
-        // parseFunc(SET_TARGET)
-        // parseFunc(SET_MODE)
-        // parseFunc(SET_STATUS)
-
+        updateHtmlData()
     }
 
+    function stressTest() {
+        setTimeout(() => {
+            sendSetRequest('mode', state.mode ? 0 : 1)
+        }, 500)
+        setTimeout(() => {
+            sendSetRequest('status', state.statuss ? 0 : 1)
+        }, 600)
+        setTimeout(() => {
+            sendSetRequest('scene', Math.floor(Math.random() * 7))
 
-    function initWebSocket() {
+        }, 600)
+
+        setTimeout(() => {
+            location.reload()
+        }, 2500)
+    }
+
+    function initWebSocket(stress = false) {
         console.log('Trying to open a WebSocket connection…');
         websocket = new WebSocket(gateway);
         websocket.onopen = onOpen;
         websocket.onclose = onClose;
         websocket.onmessage = onMessage;
+
+        if (stress) stressTest()
     }
 
     const sendRequest = (requestObject) => {
         websocket.send(JSON.stringify(requestObject));
-    }
-
-    const createRequestString = (type, param, value = false) => {
-        console.log(value, typeof value)
-        if (value) {
-            console.log('create set string')
-            return {
-                rtype: type,
-                rparam: param,
-                rvalue: value,
-            }
-        } else {
-            console.log('create get string')
-            return {
-                rtype: type,
-                rparam: param,
-            }
-        }
     }
     const createGetRequestString = (param) => {
         return {
@@ -961,7 +934,6 @@
             rparam: param,
         }
     }
-
     const createSetRequestString = (param, value) => {
         return {
             rtype: 'set',
@@ -969,7 +941,6 @@
             rvalue: value,
         }
     }
-
     const sendGetRequest = (param) => {
         sendRequest(createGetRequestString(param))
     }
@@ -983,13 +954,36 @@
     }
 
     const setActiveScene = (index) => {
-        unactivateAllScenes()
-        document.querySelectorAll(".scene-card")[index].closest('div').classList.add('active')
+        unactivateAllScenes() // .then => !!!
+        document.querySelectorAll(".scene-card")[index]?.closest('div').classList.add('active')
+    }
+
+    const getFormatedTimeFromMillis = (millis) => {
+        let res, sec = Math.trunc(millis / 1000)
+        // sec = 60*60*24*8-1
+        if (sec < 60) {
+            res = sec
+            return res.toString() + (res===1?' second ':' seconds ')
+        } else if (sec < 60 * 60) {
+            res = Math.trunc(sec / 60)
+            return res.toString() + (res===1?' minute ':' minutes ')
+        } else if (sec < 60 * 60 * 24) {
+            res = Math.trunc(sec / 60 / 60)
+            return res.toString() + (res===1?' hour ':' hours ')
+        } else if (sec < 60 * 60 * 24 * 7) {
+            res = Math.trunc(sec / 60 / 60 / 24)
+            return res.toString() + (res===1?' day ':' days ')
+        } else {
+            res = Math.trunc(sec / 60 / 60 / 24 / 7)
+            return res.toString() + (res===1?' week ':' weeks ')
+        }
     }
     const updateHtmlData = () => {
-        const {current_temp, target, ssid, rssi, mode, statuss, weekly_stats, scene} = state
+        const {current_temp, target, ssid, rssi, mode, statuss, weekly_stats, scene, esp_time, websocket_status} = state
         // weatherButtonOnClick()
         setFunc2('ctv', current_temp)
+        setFunc2('alive', websocket_status ? 'alive':'dead')
+        setFunc2('alive-time', getFormatedTimeFromMillis(esp_time))
         setFunc2('target', target)
         setFunc2('wifi-ssid', ssid)
         setFunc2('wifi-rssi', rssi + 'dB')
@@ -1012,28 +1006,29 @@
                 state.weekly_stats = json.weekly_stats
                 state.city = json.city
                 state.scene = json.scene
-            } else
-            if (json.rparam === 'status') {
+                state.esp_time = json.esp_time
+            } else if (json.rparam === 'status') {
                 state['statuss'] = json.rvalue
-            } else
-            {
+            } else {
                 state[json.rparam] = json.rvalue
             }
         }
         updateHtmlData()
 
-        if (json.rparam === 'initial_state')setTimeout(weatherButtonOnClick, 100)
+        if (json.rparam === 'initial_state') setTimeout(weatherButtonOnClick, 100)
     }
 
     function onOpen(event) {
         console.log('Connection opened');
-        // setTimeout(() => {
-        getInitialState();
-        // }, 300)
+        state.websocket_status = true
+        setTimeout(() => {
+            getInitialState();
+        }, 100)
     }
 
     function onClose(event) {
         console.log('Connection closed');
+        state.websocket_status = false
         // setTimeout(initWebSocket, 2000);
     }
 

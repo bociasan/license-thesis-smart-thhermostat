@@ -3,11 +3,9 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
-// #include <Arduino_JSON.h>
-#include <ArduinoJson.h>
 #include <credentials.h>
 #include <variables.h>
-
+#include <ArduinoJson.h>
 const char *ssid = BOCIASAN_WIFI_SSID;
 const char *password = BOCIASAN_WIFI_PASS;
 
@@ -16,10 +14,7 @@ AsyncWebServer server(80);
 //Websocket
 AsyncWebSocket ws("/ws");
 
-// JSONVar state;
-DynamicJsonDocument state(1024);
-StaticJsonDocument<256> response;
-StaticJsonDocument<256> item;
+String state;
 
 const int LED_PIN = LED_BUILTIN;
 
@@ -29,57 +24,32 @@ void notFound(AsyncWebServerRequest *request)
 }
 
 String getInitialStateString(){
-  state["mode"] = mode;
-  state["status"] = status;
-  state["target"] = round(target * 100) / 100.0;
-  state["current_temp"] = round(current_temp * 100) / 100.0;
-  state["scene"] = scene;
-  state["esp_time"] = esp_time;
-  state["ssid"] = WiFi.SSID();
-  state["rssi"] = WiFi.RSSI();
-  state["weekly_stats"][0][0] = weekly_stats[0][0];
-  state["weekly_stats"][0][1] = weekly_stats[0][1];
-  state["weekly_stats"][1][0] = weekly_stats[1][0];
-  state["weekly_stats"][1][1] = weekly_stats[1][1];
-  state["weekly_stats"][2][0] = weekly_stats[2][0];
-  state["weekly_stats"][2][1] = weekly_stats[2][1];
-  state["weekly_stats"][3][0] = weekly_stats[3][0];
-  state["weekly_stats"][3][1] = weekly_stats[3][1];
-  state["city"] = city;
-  state["rtype"] = "get";
-  state["rparam"] = "initial_state";
-  // state["sensors"][0] = WiFi.RSSI();
-
-  // state[""] = ;
-  // state[""] = ;
-  String res;
-  serializeJson(state, res);
-  return res;
-  // return JSON.stringify(state);
+  char res[512];
+  char weekly_stats_string[128];
+  sprintf(weekly_stats_string, "[[%d,%d],[%d,%d],[%d,%d],[%d,%d]]", weekly_stats[0][0], weekly_stats[0][1], weekly_stats[1][0], weekly_stats[1][1],weekly_stats[2][0], weekly_stats[2][1], weekly_stats[3][0],weekly_stats[3][1]);
+  sprintf(res, "{\"mode\":%d,\"status\":%d,\"target\":%f,\"current_temp\":%f,\"scene\":%d,\"esp_time\":%u,\"ssid\":\"%s\",\"rssi\":%d,\"city\":\"%s\",\"rtype\":\"get\",\"rparam\":\"initial_state\",\"weekly_stats\":%s}", 
+    mode, status, (round(target * 100) / 100.0), (round(current_temp * 100) / 100.0), scene, esp_time, WiFi.SSID(), WiFi.RSSI(),city,weekly_stats_string);
+  return (String)res;
 }
 
 String getVariableString(String rparam){
-  // JSONVar response;
-  response["rtype"] = "get";
+  char res[128];
+  int rvalue = 0;
+  String rtype = "get";
 
   if (rparam == "mode"){
-    response["rparam"] = "mode";
-    response["rvalue"] = mode;
+    rvalue = mode;
   } else 
   if (rparam == "status"){
-    response["rparam"] = "status";
-    response["rvalue"] = status;
+    rvalue = status;
   }else 
   if (rparam == "scene"){
-    response["rparam"] = "scene";
-    response["rvalue"] = scene;
+    rvalue = scene;
   }
-  // String res = JSON.stringify(response);
-  String res;
-  serializeJson(response, res);
-  response.clear();
+  sprintf(res, "{\"rtype\":\"%s\", \"rparam\":\"%s\", \"rvalue\":%d}", rtype, rparam, rvalue);
   Serial.println(res);
-  return res;
+
+  return (String)res;
 }
 
 void notifyClients(String json_string) {
@@ -91,13 +61,13 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, AsyncWebSocket
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
     Serial.println((char*)data);
-
+    StaticJsonDocument<200> item;
+    esp_time = millis();
     // JSONVar item = JSON.parse((char*)data);
     deserializeJson(item, data);
     if (item["rtype"] == String("get")){
       if (item["rparam"] == String("initial_state")){
-        // client->text(getInitialStateString());
-        notifyClients(getInitialStateString());
+        client->text(getInitialStateString());
       }
       
     } else 
@@ -190,5 +160,5 @@ void setup()
 
 void loop()
 {
-  // ws.cleanupClients();
+  ws.cleanupClients();
 }

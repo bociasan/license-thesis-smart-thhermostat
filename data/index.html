@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Thermostat</title>
     <style>
         :root {
             --background: #e4e7fb;
@@ -396,7 +396,52 @@
             margin: 2px;
             transition: color 0.4s ease-out;
         }
+
+        #snackbar {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        #snackbar.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
     </style>
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg id='rel-icon' style='color:slateblue;width:1em;height:1em;vertical-align:middle;fill:currentcolor;overflow:hidden' viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'><path d='M735.5 959h-447C165.3 959 65 858.7 65 735.5v-447C65 165.3 165.3 65 288.5 65h447C858.7 65 959 165.3 959 288.5v447C959 858.7 858.7 959 735.5 959zm-447-812.7c-78.4 0-142.2 63.8-142.2 142.2v447c0 78.4 63.8 142.2 142.2 142.2h447c78.4 0 142.2-63.8 142.2-142.2v-447c0-78.4-63.8-142.2-142.2-142.2h-447z'/><path d='M569.9 589.3V298.1c0-34.2-27.9-62.1-62.1-62.1s-62.1 27.9-62.1 62.1v291.3c-27.9 19.6-46.3 52-46.3 88.7 0 59.8 48.5 108.3 108.3 108.3 59.9 0 108.3-48.5 108.3-108.3.2-36.8-18.2-69.2-46.1-88.8zm-62.1-327c19.7 0 35.7 16 35.7 35.7v.6h-48.1v10.1h48.1v32.6h-48.1v10.1h48.1V384h-48.1v10h48.1v32.6h-48.1v10.1h48.1v32.6h-48.1v10.1h48.1v25.3h-71.4V298.1c0-19.8 16-35.8 35.7-35.8z'/></svg>">
+
 </head>
 <body onload="initialization()">
 <div id="main-container">
@@ -424,8 +469,8 @@
         </div>
         <div id="navbar-title">My Thermostat</div>
         <div id="navbar-right">
-            <span id="alive-time">1 min</span>
-            <span id="alive" style="margin-left: 5px">alive</span>
+            <span id="alive-time"></span>
+            <span id="alive" style="margin-left: 5px"></span>
 
         </div>
     </div>
@@ -662,6 +707,7 @@
             </div>
         </div>
     </div>
+    <div id="snackbar">Some text some message..</div>
 </div>
 <script>
     let gateway = `ws://${window.location.hostname}/ws`;
@@ -674,7 +720,7 @@
         target: 0,
         current_temp: 0,
         scene: 0,
-        esp_time: 159847002,
+        esp_time: 0,
         websocket_status: false,
         ssid: "Bociasan",
         rssi: 0,
@@ -835,14 +881,6 @@
             }
         }
     }
-
-    function unactivateAllScenes() {
-        let arr = document.querySelectorAll(".scene-card");
-        for (let i = 0; i < arr.length; i++) {
-            arr[i].closest('div').classList.remove('active')
-        }
-    }
-
     const getReverseOfSceneCard = (val) => {
         const SCENES = {
             0: 'SLEEP',
@@ -865,14 +903,19 @@
         for (let i = 0; i < scenes.length; i++) {
             scenes[i].onclick = (e) => {
                 // console.log(e.target.closest('div').classList.toggle('active'))
-                console.log(`scene ${getReverseOfSceneCard(e.target.closest('div').children[0].innerText)} click`)
+                // console.log(`scene ${getReverseOfSceneCard(e.target.closest('div').children[0].innerText)} click`)
                 if (!e.target.closest('div').classList.contains('active')) {
-                    // unactivateAllScenes()
                     // e.target.closest('div').classList.add('active')
                     sendSetRequest('scene', getReverseOfSceneCard(e.target.closest('div').children[0].innerText))
                 }
             }
         }
+    }
+
+    function showToast() {
+        let x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
     }
     const initialization = () => {
         setTimeout(() => {
@@ -882,6 +925,7 @@
 
         setOnclick('navbar-title', () => {
             // alert("This is thermostat project :))")
+            showToast()
             updateHtmlData()
         })
         setOnclick('mode', () => {
@@ -909,24 +953,25 @@
             sendSetRequest('scene', Math.floor(Math.random() * 7))
 
         }, 600)
-
         setTimeout(() => {
             location.reload()
         }, 2500)
     }
-
     function initWebSocket(stress = false) {
         console.log('Trying to open a WebSocket connection…');
         websocket = new WebSocket(gateway);
         websocket.onopen = onOpen;
         websocket.onclose = onClose;
         websocket.onmessage = onMessage;
-
         if (stress) stressTest()
     }
-
     const sendRequest = (requestObject) => {
-        websocket.send(JSON.stringify(requestObject));
+        if(websocket.readyState !== WebSocket.CLOSED || websocket.readyState !== WebSocket.CLOSING){
+            websocket.send(JSON.stringify(requestObject));
+        } else {
+
+            initWebSocket()
+        }
     }
     const createGetRequestString = (param) => {
         return {
@@ -947,20 +992,22 @@
     const sendSetRequest = (param, value) => {
         sendRequest(createSetRequestString(param, value))
     }
-
     function getInitialState() {
         console.log('sent initial state request!')
         sendGetRequest('initial_state')
     }
-
     const setActiveScene = (index) => {
-        unactivateAllScenes() // .then => !!!
-        document.querySelectorAll(".scene-card")[index]?.closest('div').classList.add('active')
+        let arr = document.querySelectorAll(".scene-card");
+        for (let i = 0; i < arr.length; i++) {
+            if (index === i){
+                arr[i].closest('div').classList.add('active')
+            } else {
+                arr[i].closest('div').classList.remove('active')
+            }
+        }
     }
-
     const getFormatedTimeFromMillis = (millis) => {
         let res, sec = Math.trunc(millis / 1000)
-        // sec = 60*60*24*8-1
         if (sec < 60) {
             res = sec
             return res.toString() + (res===1?' second ':' seconds ')
@@ -982,7 +1029,7 @@
         const {current_temp, target, ssid, rssi, mode, statuss, weekly_stats, scene, esp_time, websocket_status} = state
         // weatherButtonOnClick()
         setFunc2('ctv', current_temp)
-        setFunc2('alive', websocket_status ? 'alive':'dead')
+        // setFunc2('alive', websocket_status ? 'alive':'dead')
         setFunc2('alive-time', getFormatedTimeFromMillis(esp_time))
         setFunc2('target', target)
         setFunc2('wifi-ssid', ssid)
@@ -1017,7 +1064,6 @@
 
         if (json.rparam === 'initial_state') setTimeout(weatherButtonOnClick, 100)
     }
-
     function onOpen(event) {
         console.log('Connection opened');
         state.websocket_status = true
@@ -1031,9 +1077,8 @@
         state.websocket_status = false
         // setTimeout(initWebSocket, 2000);
     }
-
     function onMessage(event) {
-        console.log(event.data);
+        // console.log(event.data);
         updateAllData(JSON.parse(event.data))
     }
 </script>
